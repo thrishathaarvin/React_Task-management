@@ -1,26 +1,43 @@
 import { Modal, Form, Input } from "antd";
+import { useEffect } from "react";
 
-const TaskFormModal = ({ visible, onCreate, onCancel, initialData }) => {
+const TaskFormModal = ({ visible, mode, onSubmit, onCancel, initialData }) => {
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (mode === "edit" && initialData) {
+      form.setFieldsValue(initialData);
+    } else {
+      form.resetFields();
+    }
+  }, [mode, initialData, form]);
 
   return (
     <Modal
-      title="Edit Task"
+      title={mode === "edit" ? "Edit Task" : "New Task"}
       open={visible}
-      okText="Edit"
+      okText={mode === "edit" ? "Update" : "Create"}
       onCancel={onCancel}
       onOk={() => {
         form.validateFields().then(values => {
-          onCreate(values);
-          form.resetFields();
+          onSubmit(values);
         });
       }}
     >
-      <Form form={form} layout="vertical" initialValues={initialData}>
-        <Form.Item name="title" label="Title" rules={[{ required: true }]}>
+      <Form form={form} layout="vertical">
+        <Form.Item
+          name="title"
+          label="Title"
+          rules={[{ required: true }]}
+        >
           <Input />
         </Form.Item>
-        <Form.Item name="description" label="Description" rules={[{ required: true }]}>
+
+        <Form.Item
+          name="description"
+          label="Description"
+          rules={[{ required: true }]}
+        >
           <Input.TextArea rows={4} />
         </Form.Item>
       </Form>
