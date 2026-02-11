@@ -1,25 +1,25 @@
 import { TASK_STATUS } from "../constants/taskStatus.jsx";
 
-export function useTaskFilters(tasks){
-    const all=tasks;
+export function filterTasks(tasks, options = {}) {
+  let result = [...tasks];
 
-    const todo=tasks.filter(t=> t.status === TASK_STATUS.TODO);
-    const inProgress= tasks.filter(t=>t.status === TASK_STATUS.IN_PROGRESS);
-    const completed=tasks.filter(t=>t.status===TASK_STATUS.COMPLETED);
+  if (options.status) {
+    result = result.filter(task => task.status === options.status);
+  }
 
-    const pendingCount=todo.length +inProgress.length;
+  if (options.excludeCompleted) {
+    result = result.filter(task => task.status !== TASK_STATUS.COMPLETED);
+  }
 
-    const upcomingTasks= [...tasks]
-    .filter((task)=>task.status!=="COMPLETED")
-    .sort((a,b)=>new Date(b.createdDate)-new Date(a.createdDate))
-    .slice(0,4);
+  if (options.sortByDate) {
+    result = result.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+  }
 
-    return {
-        all,
-        todo,
-        inProgress,
-        completed,
-        pendingCount,
-        upcomingTasks,
-    };
+  if (options.limit) {
+    result = result.slice(0, options.limit);
+  }
+
+  return result;
 }

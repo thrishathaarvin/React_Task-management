@@ -2,16 +2,20 @@ import React, { useState } from "react";
 import { Layout, Tabs, Button } from "antd";
 import PageHeader from "../components/common/PageHeader.jsx";
 import TaskCard from "../components/task/TaskCard.jsx";
-import TaskFormModal from "../components/task/TaskFormModal.jsx";
+import TaskFormModal from "../components/task/taskFormModal.jsx";
 import { useTasks } from "../hooks/useTasks.jsx";
-import { useTaskFilters } from "../hooks/useTaskFilters.jsx";
+import { filterTasks } from "../hooks/useTaskFilters.jsx";
 import { useNotification } from "../hooks/useNotification.jsx";
 
 const { Content } = Layout;
 
 const Tasks = () => {
   const { tasks, addTask, updateStatus, deleteTask } = useTasks();
-  const { all, todo, inProgress, completed } = useTaskFilters(tasks);
+  const all = filterTasks(tasks);
+const todo = filterTasks(tasks, { status: "TODO" });
+const inProgress = filterTasks(tasks, { status: "IN_PROGRESS" });
+const completed = filterTasks(tasks, { status: "COMPLETED" });
+
   const { open, contextHolder } = useNotification();
 
   const [createOpen, setCreateOpen] = useState(false);
