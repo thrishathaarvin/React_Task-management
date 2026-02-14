@@ -9,15 +9,16 @@ import { useNotification } from "../hooks/useNotification.jsx";
 
 const { Content } = Layout;
 
+const TAB_CONFIG = [
+  { key: "all", label: "All", filter: null },
+  { key: "todo", label: "To Do", filter: { status: "TODO" } },
+  { key: "inProgress", label: "In Progress", filter: { status: "IN_PROGRESS" } },
+  { key: "completed", label: "Completed", filter: { status: "COMPLETED" } },
+];
+
 const Tasks = () => {
-  const { tasks, addTask, updateStatus, deleteTask } = useTasks();
-  const all = filterTasks(tasks);
-const todo = filterTasks(tasks, { status: "TODO" });
-const inProgress = filterTasks(tasks, { status: "IN_PROGRESS" });
-const completed = filterTasks(tasks, { status: "COMPLETED" });
-
+  const { tasks, addTask, updateStatus } = useTasks();
   const { open, contextHolder } = useNotification();
-
   const [createOpen, setCreateOpen] = useState(false);
 
   return (
@@ -46,45 +47,21 @@ const completed = filterTasks(tasks, { status: "COMPLETED" });
         />
 
         <Tabs defaultActiveKey="all" style={{ marginTop: "24px" }}>
-          <Tabs.TabPane tab="All" key="all">
-            {all.map(task => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                onStatusChange={updateStatus}
-              />
-            ))}
-          </Tabs.TabPane>
+          {TAB_CONFIG.map(({ key, label, filter }) => {
+            const filteredTasks = filter ? filterTasks(tasks, filter) : filterTasks(tasks);
 
-          <Tabs.TabPane tab="To Do" key="todo">
-            {todo.map(task => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                onStatusChange={updateStatus}
-              />
-            ))}
-          </Tabs.TabPane>
-
-          <Tabs.TabPane tab="In Progress" key="inProgress">
-            {inProgress.map(task => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                onStatusChange={updateStatus}
-              />
-            ))}
-          </Tabs.TabPane>
-
-          <Tabs.TabPane tab="Completed" key="completed">
-            {completed.map(task => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                onStatusChange={updateStatus}
-              />
-            ))}
-          </Tabs.TabPane>
+            return (
+              <Tabs.TabPane tab={label} key={key}>
+                {filteredTasks.map(task => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onStatusChange={updateStatus}
+                  />
+                ))}
+              </Tabs.TabPane>
+            );
+          })}
         </Tabs>
       </Content>
     </Layout>
